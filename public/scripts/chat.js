@@ -1,10 +1,8 @@
 import { io } from "/socket.io/socket.io.esm.min.js";
 let socket;
 
-
-
-
-connect.addEventListener("click", () => {
+console.log("from chat.js");
+(function () {
   socket = io();
   socket.on("activate", (message) => {
     send.disabled = false;
@@ -19,13 +17,16 @@ connect.addEventListener("click", () => {
       ul.appendChild(li);
     }
   });
-});
+})();
 
 disconnect.addEventListener("click", () => {
-  socket = null;
   send.disabled = true;
   console.log("Logged out from chat!");
+  socket.disconnect();
+  window.location = "/";
 });
 send.addEventListener("click", () => {
-  socket.emit("message", message.value);
+  if (socket.connected) {
+    socket.emit("message", message.value);
+  }
 });

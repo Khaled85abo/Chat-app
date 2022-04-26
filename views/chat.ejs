@@ -4,17 +4,19 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="./scripts/chat.js"  type="module" defer></script>
+    <script src="./scripts/chat.js" type="module" defer></script>
     <title>Chatt Appen</title>
   </head>
   <body>
     <h1>Welcome to our App!</h1>
 
+    <h4 id="token"><%=token%></h4>
+
     <button class="disconnect-btn" id="disconnect">Logout</button>
 
-   <ul class="messages" id="ul"></ul>
+    <ul class="messages" id="ul"></ul>
 
-    <input type="text" placeholder="Write your message" id="message">
+    <input type="text" placeholder="Write your message" id="message" />
     <button disabled id="send">Send message</button>
   </body>
 </html>

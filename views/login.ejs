@@ -1,17 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <script src="./scripts/main.js"  type="module" defer></script>
-</head>
-<body>
+    <script src="./scripts/main.js" type="module" defer></script>
+  </head>
+  <body>
     <form action="/sendlogin" method="POST">
-        <input type="text" id="username" name="username">
-        <input type="text" id="password" name="password">
-    <button>Login</button>
+      <input type="text" id="username" name="username" />
+      <input type="text" id="password" name="password" />
+      <button>Login</button>
     </form>
-</body>
+    <form action="/sendsignup" method="POST">
+      <input type="text" placeholder="name" id="username" name="username" />
+      <input type="text" placeholder="nickname" name="nickname" />
+      <input type="email" placeholder="e-mail" name="email" />
+      <input
+        type="password"
+        placeholder="password"
+        id="password"
+        name="password"
+      />
+      <button>Sign up</button>
+    </form>
+  </body>
 </html>
