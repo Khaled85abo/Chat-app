@@ -9,8 +9,15 @@ connect.addEventListener("click", () => {
   });
   socket.on("messages", (messages) => {
     console.log(messages);
+    ul.innerHTML = "";
+    for (let msg of messages) {
+      const li = document.createElement("li");
+      li.innerText = msg.content;
+      ul.appendChild(li);
+    }
   });
 });
+
 disconnect.addEventListener("click", () => {
   socket = null;
   send.disabled = true;
@@ -18,10 +25,4 @@ disconnect.addEventListener("click", () => {
 });
 send.addEventListener("click", () => {
   socket.emit("message", message.value);
-  const li = document.createElement("li");
-  li.innerText = message.value;
-  ul.appendChild(li);
 });
-
-if (socket) {
-}
