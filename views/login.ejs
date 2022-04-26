@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to chatapp!</title>
+    <title>Login</title>
     <script src="./scripts/main.js"  type="module" defer></script>
 </head>
 <body>
-    <form action="/login" method="GET">
-        <button class="login-btn">Login</button>
+    <form action="/sendlogin" method="POST">
+        <input type="text" id="username" name="username">
+        <input type="text" id="password" name="password">
+    <button>Login</button>
     </form>
 </body>
 </html>
