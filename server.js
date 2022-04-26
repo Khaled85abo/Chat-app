@@ -50,14 +50,15 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/sendlogin", async (req, res) => {
+  const hash = bcrypt.hashSync(req.body.password, 10);
+
   try {
     const user = await User.find({
       email: req.body.email,
     });
-    const passwordMatch = await bcrypt.compareSync(
-      req.body.password,
-      user.password
-    );
+    console.log(" user password from mongodb: ", user);
+    console.log(" user from form : ", hash);
+    const passwordMatch = hash === user.password;
     if (passwordMatch) {
       const token = createToken(user);
       console.log(token);
