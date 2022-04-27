@@ -56,10 +56,12 @@ app.post("/sendlogin", async (req, res) => {
     const user = await User.find({
       email: req.body.email,
     });
-    console.log(" user password from mongodb: ", user);
-    console.log(" user from form : ", hash);
-    const passwordMatch = hash === user.password;
-    if (passwordMatch) {
+    const { password } = user;
+    console.log(" user from mongodb: ", user);
+    console.log(" user password from mongodb: ", password);
+    console.log(" password from form : ", hash);
+    const match = bcrypt.compareSync(req.body.password, user.password);
+    if (match) {
       const token = createToken(user);
       console.log(token);
 
