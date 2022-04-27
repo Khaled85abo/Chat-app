@@ -16,6 +16,8 @@ const io = new Server(server);
 
 io.on("connection", async (socket) => {
   console.log("connected!");
+  socket.handshake.auth.token
+  console.log(socket.handshake.headers.cookie)
   const messages = await Message.find({});
   socket.emit("messages", messages);
   socket.data.messages = [];
@@ -35,7 +37,6 @@ io.on("connection", async (socket) => {
 
 const createToken = (data) => {
   const { email, nickname, _id } = data;
-  console.log("data in create token: ", data);
   return jwt.sign({ email, nickname, _id }, process.env.TOKEN_SECRET, {
     expiresIn: "1w",
   });
@@ -53,20 +54,14 @@ app.post("/sendlogin", async (req, res) => {
   const hash = bcrypt.hashSync(req.body.password, 10);
 
   try {
-    const user = await User.find({
+    const user = await User.findOne({
       email: req.body.email,
     });
-    const { password } = user;
-    console.log(" user from mongodb: ", user);
-    console.log(" user password from mongodb: ", password);
-    console.log(" password from form : ", hash);
     const match = bcrypt.compareSync(req.body.password, user.password);
     if (match) {
       const token = createToken(user);
-      console.log(token);
-
       req.token = token;
-      res.redirect("/chat");
+      res.cookie('token', token).redirect('/chat')
     } else {
       throw new Error("Wrong password!");
     }
@@ -85,10 +80,8 @@ app.post("/sendsignup", async (req, res) => {
     });
     delete user.password;
     const token = createToken(user);
-    console.log(token);
-
     req.token = token;
-    res.redirect("/chat");
+    res.cookie('token', token).redirect('/chat')
   } catch (error) {
     console.log("Error creating User: ", error);
   }
