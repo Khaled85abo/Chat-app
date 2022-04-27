@@ -16,18 +16,20 @@ const io = new Server(server);
 
 io.on("connection", async (socket) => {
   console.log("connected!");
-  socket.handshake.auth.token
-  console.log(socket.handshake.headers.cookie)
-  const messages = await Message.find({});
+  const user = ValidateToken(socket.handshake.headers.cookie);
+  const messages = await mergeMsgUser();
+
   socket.emit("messages", messages);
   socket.data.messages = [];
   socket.emit("activate", "Activated chat!");
   socket.on("message", async (message) => {
+    const user = ValidateToken(socket.handshake.headers.cookie);
     socket.data.messages.push(message);
     await Message.create({
       content: message,
+      user: user,
     });
-    const messages = await Message.find({});
+    const messages = await mergeMsgUser();
     socket.emit("messages", messages);
   });
   socket.on("disconnect", () => {
@@ -35,6 +37,25 @@ io.on("connection", async (socket) => {
   });
 });
 
+const mergeMsgUser = async () => {
+  const arr = [];
+  const messages = await Message.find({});
+
+  for (let message of messages) {
+    const user = await User.find({ _id: message.user });
+    const newMsg = { ...message._doc, user };
+    arr.push(newMsg);
+  }
+  return arr;
+};
+const ValidateToken = (SocketCookies) => {
+  const cookies = SocketCookies.split(";");
+  const TokenCookie = cookies.find((cookie) => cookie.includes("token"));
+  const tokenArr = TokenCookie.split("=");
+  const token = tokenArr[1];
+  const user = jwt.verify(token, process.env.TOKEN_SECRET);
+  return user;
+};
 const createToken = (data) => {
   const { email, nickname, _id } = data;
   return jwt.sign({ email, nickname, _id }, process.env.TOKEN_SECRET, {
@@ -61,7 +82,7 @@ app.post("/sendlogin", async (req, res) => {
     if (match) {
       const token = createToken(user);
       req.token = token;
-      res.cookie('token', token).redirect('/chat')
+      res.cookie("token", token).redirect("/chat");
     } else {
       throw new Error("Wrong password!");
     }
@@ -78,10 +99,8 @@ app.post("/sendsignup", async (req, res) => {
       password: hash,
       email: req.body.email,
     });
-    delete user.password;
     const token = createToken(user);
-    req.token = token;
-    res.cookie('token', token).redirect('/chat')
+    res.cookie("token", token).redirect("/chat");
   } catch (error) {
     console.log("Error creating User: ", error);
   }
