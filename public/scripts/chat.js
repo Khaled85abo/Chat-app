@@ -1,7 +1,6 @@
 import { io } from "/socket.io/socket.io.esm.min.js";
 let socket;
 
-console.log("from chat.js");
 (function () {
   socket = io();
   socket.on("activate", (message) => {
@@ -13,7 +12,18 @@ console.log("from chat.js");
     ul.innerHTML = "";
     for (let msg of messages) {
       const li = document.createElement("li");
-      li.innerText = msg.content;
+      const content = document.createElement("span");
+      content.innerText = msg.content;
+      li.appendChild(content);
+      if (!msg.myMessage) {
+        const user = document.createElement("span");
+        user.classList.add("user-name");
+        user.innerText = msg.user.nickname;
+        li.appendChild(user);
+      }
+      if (msg.myMessage) {
+        li.classList.add("right");
+      }
       ul.appendChild(li);
     }
   });
@@ -29,4 +39,5 @@ send.addEventListener("click", () => {
   if (socket.connected) {
     socket.emit("message", message.value);
   }
+  message.value = "";
 });

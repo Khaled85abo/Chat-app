@@ -17,7 +17,7 @@ const io = new Server(server);
 io.on("connection", async (socket) => {
   console.log("connected!");
   const user = ValidateToken(socket.handshake.headers.cookie);
-  const messages = await mergeMsgUser();
+  const messages = await mergeMsgUser(user);
 
   socket.emit("messages", messages);
   socket.data.messages = [];
@@ -29,7 +29,7 @@ io.on("connection", async (socket) => {
       content: message,
       user: user,
     });
-    const messages = await mergeMsgUser();
+    const messages = await mergeMsgUser(user);
     socket.emit("messages", messages);
   });
   socket.on("disconnect", () => {
@@ -37,13 +37,15 @@ io.on("connection", async (socket) => {
   });
 });
 
-const mergeMsgUser = async () => {
+const mergeMsgUser = async (currentUser) => {
   const arr = [];
+  const currentUserId = currentUser._id;
   const messages = await Message.find({});
 
   for (let message of messages) {
-    const user = await User.find({ _id: message.user });
-    const newMsg = { ...message._doc, user };
+    const user = await User.findOne({ _id: message.user });
+    const myMessage = currentUserId == message.user;
+    const newMsg = { ...message._doc, user, myMessage };
     arr.push(newMsg);
   }
   return arr;
